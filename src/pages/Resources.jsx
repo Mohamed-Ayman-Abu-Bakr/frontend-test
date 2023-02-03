@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import { Store } from "../context/store";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
@@ -54,7 +55,7 @@ export default function Resources() {
   const getResources = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST" });
-      const response = await axios.get("http://localhost:5000/resources");
+      const response = await axios.get(URLS.RESOURCES);
       dispatch({ type: "FETCH_SUCCESS", payload: response.data });
     } catch (error) {
       dispatch({ type: "FETCH_FAIL" });
@@ -67,7 +68,7 @@ export default function Resources() {
     try {
       dispatch({ type: "UPDATE_REQUEST" });
       await axios.post(
-        "http://localhost:5000/resources",
+        URLS.RESOURCES,
         JSON.stringify({ resourceTopic, resourceLevel, resourceLink }),
         {
           headers: { "Content-Type": "application/json" },
@@ -85,7 +86,7 @@ export default function Resources() {
     try {
       let resource_id = resource.resource_id;
       await axios.patch(
-        "http://localhost:5000/resources",
+        URLS.RESOURCES,
         JSON.stringify({ resource_id, newTopic, newLevel, newLink })
       );
     } catch (error) {
@@ -97,7 +98,7 @@ export default function Resources() {
     if (window.confirm("Are you sure to delete?")) {
       try {
         dispatch({ type: "DELETE_REQUEST" });
-        await axios.delete("http://localhost:5000/resources", {
+        await axios.delete(URLS.RESOURCES, {
           params: {
             resource_id: resource.resource_id,
           },

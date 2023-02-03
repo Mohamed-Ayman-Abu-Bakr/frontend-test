@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import {
   DELETE_USERS,
@@ -150,7 +151,7 @@ function User() {
   const getTrainees = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST_trainees" });
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(URLS.USERS, {
         params: {
           role: "Trainee",
         },
@@ -165,7 +166,7 @@ function User() {
   const getMentors = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST_mentors" });
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(URLS.USERS, {
         params: {
           role: "Mentor",
         },
@@ -179,7 +180,7 @@ function User() {
   const getAdmins = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST_admins" });
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(URLS.USERS, {
         params: {
           role: "Admin",
         },
@@ -194,7 +195,7 @@ function User() {
     try {
       dispatch({ type: "RESET_REQUEST" });
       await axios.patch(
-        "http://localhost:5000/users",
+        URLS.USERS,
         JSON.stringify({ email }),
         {
           headers: { "Content-Type": "application/json" },
@@ -212,7 +213,7 @@ function User() {
     if (window.confirm("Are you sure to delete?")) {
       try {
         dispatch({ type: "DELETE_REQUEST" });
-        await axios.delete("http://localhost:5000/users", {
+        await axios.delete(URLS.USERS, {
           params: {
             email: email,
           },
@@ -268,8 +269,8 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button onClick={() => setEdit(!edit)}>
-                      <CreateIcon />
+                    <button>
+                      <Edit user={item} mentors = {mentors}/>
                     </button>
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
@@ -325,8 +326,8 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button onClick={() => setEdit(!edit)}>
-                      <CreateIcon />
+                    <button>
+                      <Edit user={item} mentors = {mentors}/>
                     </button>
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
@@ -390,7 +391,7 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
                     <button>
-                      <Edit data={item} />
+                      <Edit user={item} mentors = {mentors}/>
                     </button>
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />

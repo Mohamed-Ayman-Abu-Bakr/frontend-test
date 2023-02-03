@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import CircularProgress from "@mui/material/CircularProgress";
 
 const reducer = (state, action) => {
@@ -50,7 +51,7 @@ function UserEntry() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/userentry",
+        URLS.USER_ENTRY,
         JSON.stringify({
           email,
           firstName,
@@ -83,7 +84,7 @@ function UserEntry() {
       const data = new FormData();
       data.append("excel-file", selectedFile, "file.xlsx");
       const response = await axios.post(
-        "http://localhost:5000/userentryfile",
+        URLS.USER_ENTRY_FILE,
         data
       );
       console.log(response);
@@ -102,7 +103,7 @@ function UserEntry() {
 
   const getRoles = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/userentry");
+      const response = await axios.get(URLS.USER_ENTRY);
       setRoles(
         response.data.map(({ role_id, user_role }) => ({
           platformRole: user_role,

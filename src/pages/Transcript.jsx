@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useReducer } from "react";
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import { toast } from "react-toastify";
 import { Store } from "../context/store";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -42,7 +43,7 @@ export default function Transcript() {
     try {
       dispatch({ type: "FETCH_REQUEST" });
       const response = await axios.get(
-        "http://localhost:5000/profile",
+        URLS.PROFILE,
         { params },
         {
           headers: { "Content-Type": "application/json" },
@@ -60,7 +61,7 @@ export default function Transcript() {
     try {
       dispatch({ type: "FETCH_REQUEST_transcript" });
       const response = await axios.get(
-        "http://localhost:5000/transcript",
+        URLS.TRANSCRIPT,
         { params },
         {
           headers: { "Content-Type": "application/json" },

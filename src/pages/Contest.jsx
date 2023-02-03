@@ -1,5 +1,6 @@
 import React, { useState, useReducer } from "react";
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
 

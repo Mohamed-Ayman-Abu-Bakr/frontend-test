@@ -5,7 +5,9 @@ import CreateIcon from "@mui/icons-material/Create";
 import { useEffect, useState, useReducer } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json';
+import { integerPropType } from "@mui/utils";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -26,15 +28,24 @@ const reducer = (state, action) => {
   }
 };
 
-export default function Edit(data) {
+export default function Edit(props) 
+{
+  let user = props.user
+  let mentors = props.mentors
+
   const [open, setOpen] = useState(false);
   const [{ loading, loadingUpdate }, dispatch] = useReducer(reducer, {
     loading: false,
     error: "",
   });
 
-  const [name, setName] = useState(data["data"].name);
-  const [vjudgeHandle, setVjudgeHandle] = useState(data["data"].vjudge_handle);
+  const [name, setName] = useState(user.name);
+  const [vjudgeHandle, setVjudgeHandle] = useState(user.vjudge_handle);
+  const [email, setEmail] = useState(user.email);
+  const [level, setLevel] = useState(user.level);
+  const [mentorID, setMentorID] = useState(user.mentor_id);
+  const [enrolled, setEnrolled] = useState(user.enrolled);
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -49,11 +60,15 @@ export default function Edit(data) {
     try {
       dispatch({ type: "UPDATE_REQUEST" });
       await axios.post(
-        "http://localhost:5000/profile",
+        URLS.PROFILE_ADMIN,
         JSON.stringify({
-          email: data["data"].email,
+          userID: user.user_id,
           name,
           vjudgeHandle,
+          email,
+          level,
+          mentorID,
+          enrolled,
         }),
         {
           headers: { "Content-Type": "application/json" },
@@ -61,7 +76,7 @@ export default function Edit(data) {
       );
       dispatch({ type: "UPDATE_SUCCESS" });
       toast.success("Profile updated");
-      displayProfile();
+      handleClose();
     } catch (error) {
       dispatch({ type: "UPDATE_FAIL" });
       toast.error(error);
@@ -107,7 +122,67 @@ export default function Edit(data) {
                     />
                   </div>
                 </div>
-
+                <div className="flex flex-col">
+                  <label className="inputlabel">Email</label>
+                  <div className="inputCont">
+                    <input
+                      value={email}
+                      className="input"
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <label className="inputlabel">Level</label>
+                  <div className="inputCont">
+                    <input
+                      value={level}
+                      type="number"
+                      className="input"
+                      onChange={(e) => setLevel(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <label className="inputlabel">Mentor</label>
+                  <div className="inputCont">
+                    <select
+                      value={mentorID? mentorID:undefined}
+                      onChange={(e) => setMentorID(e.target.value==="NULL"? (null):e.target.value)}
+                      type="string"
+                      placeholder="Mentor"
+                      className="input"
+                    >
+                      <option key = {null} value = {undefined}>
+                        NULL
+                      </option>
+                      {mentors.map(({ name, user_id }) => (
+                        <option key={user_id} value={user_id}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <label className="inputlabel">Enrolled</label>
+                  <div className="inputCont">
+                    <div className="flex flex-row" >
+                      <div className="radio">
+                        <label>
+                          <input name = "enrolled" type="radio" value={1} checked={enrolled === 1} onChange={(e) => setEnrolled(Number(e.target.value))}/>
+                          Yes
+                        </label>
+                      </div>  
+                      <div>
+                        <label>
+                          <input name = "enrolled" type="radio" value = {0} checked={enrolled === 0} onChange={(e) => setEnrolled(Number(e.target.value))} />
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex flex-col mt-4">
                   {loadingUpdate ? (
                     <button

@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState, useReducer } from "react";
 import { toast } from "react-toastify";
@@ -39,7 +40,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       dispatch({ type: "LOGIN_REQUEST" });
-      const { data } = await axios.post("http://localhost:5000/login", {
+      const { data } = await axios.post(URLS.LOGIN, {
         email,
         password,
       });
