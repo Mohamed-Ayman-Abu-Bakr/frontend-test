@@ -1,94 +1,30 @@
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import CreateIcon from "@mui/icons-material/Create";
-import { useEffect, useState, useReducer } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { toast } from "react-toastify";
-import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json';
-import { integerPropType } from "@mui/utils";
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "FETCH_REQUEST":
-      return { ...state, loading: true };
-    case "FETCH_SUCCESS":
-      return { ...state, loading: false };
-    case "FETCH_FAIL":
-      return { ...state, loading: false, error: action.payload };
-    case "UPDATE_REQUEST":
-      return { ...state, loadingUpdate: true };
-    case "UPDATE_SUCCESS":
-      return { ...state, loadingUpdate: false };
-    case "UPDATE_FAIL":
-      return { ...state, loadingUpdate: false };
-    default:
-      return state;
-  }
-};
 
-export default function Edit(props) 
-{
+export default function Edit(props) {
+  let isOpened = props.opened
   let user = props.user
   let mentors = props.mentors
+  let loadingUpdate = props.loadingUpdate
+  let loading = false
 
-  const [open, setOpen] = useState(false);
-  const [{ loading, loadingUpdate }, dispatch] = useReducer(reducer, {
-    loading: false,
-    error: "",
-  });
+  const updateUser = props.updateUser
+  const submitEdit = props.submitEdit
+  const handleClose = props.handleClose
 
-  const [name, setName] = useState(user.name);
-  const [vjudgeHandle, setVjudgeHandle] = useState(user.vjudge_handle);
-  const [email, setEmail] = useState(user.email);
-  const [level, setLevel] = useState(user.level);
-  const [mentorID, setMentorID] = useState(user.mentor_id);
-  const [enrolled, setEnrolled] = useState(user.enrolled);
-
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      dispatch({ type: "UPDATE_REQUEST" });
-      await axios.post(
-        URLS.PROFILE_ADMIN,
-        JSON.stringify({
-          userID: user.user_id,
-          name,
-          vjudgeHandle,
-          email,
-          level,
-          mentorID,
-          enrolled,
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      dispatch({ type: "UPDATE_SUCCESS" });
-      toast.success("Profile updated");
-      handleClose();
-    } catch (error) {
-      dispatch({ type: "UPDATE_FAIL" });
-      toast.error(error);
-    }
-  };
+  const handleSubmit = async(e) =>{
+    submitEdit(e)
+  }
 
   return (
     <div>
-      <CreateIcon onClick={handleClickOpen} />
+      {/* <CreateIcon onClick={handleClickOpen} /> */}
       <Dialog
         fullWidth
-        open={open}
+        open={isOpened}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -106,9 +42,9 @@ export default function Edit(props)
                   <label className="inputlabel">Name</label>
                   <div className="inputCont">
                     <input
-                      value={name}
+                      value={user?.name}
                       className="input"
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => updateUser({...user,name:e.target.value})}
                     />
                   </div>
                 </div>
@@ -116,9 +52,9 @@ export default function Edit(props)
                   <label className="inputlabel">VjudgeHandle</label>
                   <div className="inputCont">
                     <input
-                      value={vjudgeHandle}
+                      value={user?.vjudge_handle}
                       className="input"
-                      onChange={(e) => setVjudgeHandle(e.target.value)}
+                      onChange={(e) => updateUser({...user,vjudge_handle:e.target.value})}
                     />
                   </div>
                 </div>
@@ -126,9 +62,9 @@ export default function Edit(props)
                   <label className="inputlabel">Email</label>
                   <div className="inputCont">
                     <input
-                      value={email}
+                      value={user?.email}
                       className="input"
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => updateUser({...user,email:e.target.value})}
                     />
                   </div>
                 </div>
@@ -136,10 +72,10 @@ export default function Edit(props)
                   <label className="inputlabel">Level</label>
                   <div className="inputCont">
                     <input
-                      value={level}
+                      value={user?.level}
                       type="number"
                       className="input"
-                      onChange={(e) => setLevel(e.target.value)}
+                      onChange={(e) => updateUser({...user,level:e.target.value})}
                     />
                   </div>
                 </div>
@@ -147,16 +83,16 @@ export default function Edit(props)
                   <label className="inputlabel">Mentor</label>
                   <div className="inputCont">
                     <select
-                      value={mentorID? mentorID:undefined}
-                      onChange={(e) => setMentorID(e.target.value==="NULL"? (null):e.target.value)}
+                      value={user?.mentor_id ? user.mentor_id : undefined}
+                      onChange={(e) => updateUser({...user,mentor_id:e.target.value === "NULL" ? (null) : e.target.value})}
                       type="string"
                       placeholder="Mentor"
                       className="input"
                     >
-                      <option key = {null} value = {undefined}>
+                      <option key={null} value={undefined}>
                         NULL
                       </option>
-                      {mentors.map(({ name, user_id }) => (
+                      {mentors?.map(({ name, user_id }) => (
                         <option key={user_id} value={user_id}>
                           {name}
                         </option>
@@ -170,13 +106,13 @@ export default function Edit(props)
                     <div className="flex flex-row" >
                       <div className="radio">
                         <label>
-                          <input name = "enrolled" type="radio" value={1} checked={enrolled === 1} onChange={(e) => setEnrolled(Number(e.target.value))}/>
+                          <input name="enrolled" type="radio" value={1} checked={user?.enrolled === 1} onChange={(e) => updateUser({...user,enrolled:Number(e.target.value)})} />
                           Yes
                         </label>
-                      </div>  
+                      </div>
                       <div>
                         <label>
-                          <input name = "enrolled" type="radio" value = {0} checked={enrolled === 0} onChange={(e) => setEnrolled(Number(e.target.value))} />
+                          <input name="enrolled" type="radio" value={0} checked={user?.enrolled === 0} onChange={(e) => updateUser({...user,enrolled:Number(e.target.value)})} />
                           No
                         </label>
                       </div>

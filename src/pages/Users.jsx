@@ -48,11 +48,16 @@ const reducer = (state, action) => {
       return { ...state, admins: action.payload, loading_admins: false };
     case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
-
+    
+    case "SHOW_DIALOGUE":
+      return { ...state, open: true };
+    case "HIDE_DIALOGUE":
+      return { ...state, open: false }; 
+      
     case "UPDATE_REQUEST":
       return { ...state, loadingUpdate: true };
     case "UPDATE_SUCCESS":
-      return { ...state, loadingUpdate: false };
+      return { ...state, loadingUpdate: false, open:false };
     case "UPDATE_FAIL":
       return { ...state, loadingUpdate: false };
 
@@ -101,15 +106,15 @@ function User() {
 
   const subHeaders = ["Name", "VJudgeHandle", "Email"];
 
-  const [edit, setEdit] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [userToEdit, setUserToEdit] = useState();
 
   const handleClose = () => {
-    setOpen(false);
+    dispatch({ type: "HIDE_DIALOGUE"});
+  };
+
+  const initUpdate = (item) => {
+    setUserToEdit(item);
+    dispatch({ type: "SHOW_DIALOGUE"});
   };
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -125,10 +130,12 @@ function User() {
       trainees,
       mentors,
       admins,
+      open,
     },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
+    open: false,
     error: "",
   });
 
@@ -219,7 +226,7 @@ function User() {
           },
         });
         dispatch({ type: "DELETE_SUCCESS" });
-        getTrainees();
+        getData();
         toast.success("User successfully deleted");
       } catch (err) {
         toast.error(err);
@@ -230,7 +237,36 @@ function User() {
     }
   };
 
-  useEffect(() => {
+  const editHandler = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch({ type: "UPDATE_REQUEST" });
+      await axios.post(
+        URLS.PROFILE_ADMIN,
+        JSON.stringify({
+          userID: userToEdit.user_id,
+          name: userToEdit.name,
+          vjudgeHandle: userToEdit.vjudge_handle,
+          email: userToEdit.email,
+          level: userToEdit.level,
+          mentorID: userToEdit.mentor_id,
+          enrolled: userToEdit.enrolled,
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      dispatch({ type: "UPDATE_SUCCESS" });
+      getData();
+      toast.success("Profile updated");
+    } catch (error) {
+      dispatch({ type: "UPDATE_FAIL" });
+      toast.error(error);
+    }
+  };
+
+  const getData = async() =>{
     if (userInfo?.permissions?.find((perm) => perm === VIEW_MENTORS)) {
       getMentors();
     }
@@ -238,10 +274,23 @@ function User() {
       getAdmins();
     }
     getTrainees();
+  };
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return (
+    
     <div className="flex flex-col px-4 min-h-screen items-center">
+      <Edit user={userToEdit}
+            mentors = {mentors} 
+            opened = {open} 
+            handleClose = {handleClose} 
+            submitEdit = {editHandler} 
+            updateUser = {setUserToEdit}
+            loadingUpdate = {loadingUpdate}
+      />
       <p className="text-3xl font-semibold lg:my-10 mb-4">Admins</p>
       {loading_admins || loadingDelete ? (
         <div className="flex justify-center py-32">
@@ -269,9 +318,7 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button>
-                      <Edit user={item} mentors = {mentors}/>
-                    </button>
+                    <CreateIcon onClick={() => {initUpdate(item)}} />
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -326,9 +373,7 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button>
-                      <Edit user={item} mentors = {mentors}/>
-                    </button>
+                    <CreateIcon onClick={() => {initUpdate(item)}} />
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -390,9 +435,8 @@ function User() {
                     {item.enrolled ? <p> Yes </p> : <p> No </p>}
                   </StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button>
-                      <Edit user={item} mentors = {mentors}/>
-                    </button>
+                    <CreateIcon onClick={() => {initUpdate(item)}} />
+                    
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
