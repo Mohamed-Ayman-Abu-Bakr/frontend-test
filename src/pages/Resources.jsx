@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
 import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json'
+import URLS from "../urls/server_urls.json";
 import { Store } from "../context/store";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
@@ -120,7 +120,7 @@ export default function Resources() {
   }, []);
 
   return (
-    <div className="flex flex-col lg:items-center p-4 ">
+    <div className="flex flex-col lg:items-center p-4 lg:p-0  ">
       <p className="text-3xl font-semibold lg:my-10 mb-4">
         Manage Your Resources
       </p>

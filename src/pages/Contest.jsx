@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from "react";
 import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json'
+import URLS from "../urls/server_urls.json";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
 
@@ -63,7 +63,7 @@ function ContestDetails() {
   };
 
   return (
-    <div className="flex flex-col lg:items-center p-4">
+    <div className="flex flex-col lg:items-center p-4 lg:p-0 ">
       <p className="text-3xl font-semibold lg:my-10 mb-4">
         Add Contest Details
       </p>

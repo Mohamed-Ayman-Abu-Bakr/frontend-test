@@ -3,21 +3,20 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import CircularProgress from "@mui/material/CircularProgress";
 
-
 export default function Edit(props) {
-  let isOpened = props.opened
-  let user = props.user
-  let mentors = props.mentors
-  let loadingUpdate = props.loadingUpdate
-  let loading = false
+  let isOpened = props.opened;
+  let user = props.user;
+  let mentors = props.mentors;
+  let loadingUpdate = props.loadingUpdate;
+  let loading = false;
 
-  const updateUser = props.updateUser
-  const submitEdit = props.submitEdit
-  const handleClose = props.handleClose
+  const updateUser = props.updateUser;
+  const submitEdit = props.submitEdit;
+  const handleClose = props.handleClose;
 
-  const handleSubmit = async(e) =>{
-    submitEdit(e)
-  }
+  const handleSubmit = async (e) => {
+    submitEdit(e);
+  };
 
   return (
     <div>
@@ -44,7 +43,9 @@ export default function Edit(props) {
                     <input
                       value={user?.name}
                       className="input"
-                      onChange={(e) => updateUser({...user,name:e.target.value})}
+                      onChange={(e) =>
+                        updateUser({ ...user, name: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -54,7 +55,9 @@ export default function Edit(props) {
                     <input
                       value={user?.vjudge_handle}
                       className="input"
-                      onChange={(e) => updateUser({...user,vjudge_handle:e.target.value})}
+                      onChange={(e) =>
+                        updateUser({ ...user, vjudge_handle: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -64,7 +67,9 @@ export default function Edit(props) {
                     <input
                       value={user?.email}
                       className="input"
-                      onChange={(e) => updateUser({...user,email:e.target.value})}
+                      onChange={(e) =>
+                        updateUser({ ...user, email: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -75,7 +80,9 @@ export default function Edit(props) {
                       value={user?.level}
                       type="number"
                       className="input"
-                      onChange={(e) => updateUser({...user,level:e.target.value})}
+                      onChange={(e) =>
+                        updateUser({ ...user, level: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -84,7 +91,13 @@ export default function Edit(props) {
                   <div className="inputCont">
                     <select
                       value={user?.mentor_id ? user.mentor_id : undefined}
-                      onChange={(e) => updateUser({...user,mentor_id:e.target.value === "NULL" ? (null) : e.target.value})}
+                      onChange={(e) =>
+                        updateUser({
+                          ...user,
+                          mentor_id:
+                            e.target.value === "NULL" ? null : e.target.value,
+                        })
+                      }
                       type="string"
                       placeholder="Mentor"
                       className="input"
@@ -103,16 +116,38 @@ export default function Edit(props) {
                 <div className="flex flex-col">
                   <label className="inputlabel">Enrolled</label>
                   <div className="inputCont">
-                    <div className="flex flex-row" >
+                    <div className="flex flex-col">
                       <div className="radio">
                         <label>
-                          <input name="enrolled" type="radio" value={1} checked={user?.enrolled === 1} onChange={(e) => updateUser({...user,enrolled:Number(e.target.value)})} />
+                          <input
+                            name="enrolled"
+                            type="radio"
+                            value={1}
+                            checked={user?.enrolled === 1}
+                            onChange={(e) =>
+                              updateUser({
+                                ...user,
+                                enrolled: Number(e.target.value),
+                              })
+                            }
+                          />{" "}
                           Yes
                         </label>
                       </div>
                       <div>
                         <label>
-                          <input name="enrolled" type="radio" value={0} checked={user?.enrolled === 0} onChange={(e) => updateUser({...user,enrolled:Number(e.target.value)})} />
+                          <input
+                            name="enrolled"
+                            type="radio"
+                            value={0}
+                            checked={user?.enrolled === 0}
+                            onChange={(e) =>
+                              updateUser({
+                                ...user,
+                                enrolled: Number(e.target.value),
+                              })
+                            }
+                          />{" "}
                           No
                         </label>
                       </div>

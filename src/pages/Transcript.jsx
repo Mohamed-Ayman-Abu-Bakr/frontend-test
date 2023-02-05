@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useReducer } from "react";
 import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json'
+import URLS from "../urls/server_urls.json";
 import { toast } from "react-toastify";
 import { Store } from "../context/store";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -80,7 +80,7 @@ export default function Transcript() {
   }, []);
 
   return (
-    <div className="flex flex-col lg:items-center p-4">
+    <div className="flex flex-col lg:items-center p-4 lg:p-0 ">
       <p className="text-3xl font-semibold lg:my-10 mb-4">Trasncript</p>
       {loading ? (
         <div className="flex justify-center py-32">

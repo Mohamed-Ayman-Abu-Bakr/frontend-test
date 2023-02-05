@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
 import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json'
+import URLS from "../urls/server_urls.json";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const reducer = (state, action) => {
@@ -83,10 +83,7 @@ function UserEntry() {
     try {
       const data = new FormData();
       data.append("excel-file", selectedFile, "file.xlsx");
-      const response = await axios.post(
-        URLS.USER_ENTRY_FILE,
-        data
-      );
+      const response = await axios.post(URLS.USER_ENTRY_FILE, data);
       console.log(response);
       setSuccess(true);
       setErrMsg("Form Submitted Successfully");
@@ -120,7 +117,7 @@ function UserEntry() {
   }, []);
 
   return (
-    <div className="flex flex-col p-4 lg:items-center">
+    <div className="flex flex-col p-4 lg:p-0  lg:items-center">
       <p className="text-3xl font-semibold lg:my-10 mb-4">Add New Users</p>
       <form className="flex flex-col lg:w-[40%]" onSubmit={enterUser}>
         <div className="flex flex-col">

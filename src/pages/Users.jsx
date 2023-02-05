@@ -256,48 +256,98 @@ export default function User() {
   }, []);
 
   return (
-    <div className="flex flex-col p-4 min-h-screen items-center">
-      <Edit
-        user={userToEdit}
-        mentors={mentors}
-        opened={open}
-        handleClose={handleClose}
-        submitEdit={editHandler}
-        updateUser={setUserToEdit}
-        loadingUpdate={loadingUpdate}
-      />
-      <p className="text-3xl font-semibold lg:my-10 mb-4">Admins</p>
-      {loading_admins || loadingDelete ? (
-        <div className="flex justify-center py-32">
-          <CircularProgress size={50} thickness={4} color="inherit" />
-        </div>
-      ) : (
-        <TableContainer className="hidden md:flex" component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                {subHeaders.map((header) => (
-                  <StyledTableCell key={header} align="center">
-                    {header}
-                  </StyledTableCell>
-                ))}
-                <StyledTableCell align="center">ACTIONS</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+    <>
+      <div className="flex flex-col p-4 sm:p-0 sm:mx-4 sm:mb-4 sm:min-h-screen sm:items-center">
+        <Edit
+          user={userToEdit}
+          mentors={mentors}
+          opened={open}
+          handleClose={handleClose}
+          submitEdit={editHandler}
+          updateUser={setUserToEdit}
+          loadingUpdate={loadingUpdate}
+        />
+        <p className="text-3xl font-semibold sm:my-10 sm:mb-4">Admins</p>
+        {loading_admins || loadingDelete ? (
+          <div className="flex justify-center py-32">
+            <CircularProgress size={50} thickness={4} color="inherit" />
+          </div>
+        ) : (
+          <>
+            <TableContainer className="hidden md:flex" component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    {subHeaders.map((header) => (
+                      <StyledTableCell key={header} align="center">
+                        {header}
+                      </StyledTableCell>
+                    ))}
+                    <StyledTableCell align="center">ACTIONS</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {admins?.map((item) => (
+                    <StyledTableRow key={item.email}>
+                      <StyledTableCell align="center">
+                        {item.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.vjudge_handle}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.email}
+                      </StyledTableCell>
+                      <StyledTableCell className="space-x-4" align="center">
+                        <button
+                          onClick={() => {
+                            initUpdate(item);
+                          }}
+                        >
+                          <CreateIcon />
+                        </button>
+                        <button onClick={() => deleteHandler(item.email)}>
+                          <DeleteIcon />
+                        </button>
+                        {loadingReset ? (
+                          <button onClick={() => resetPass(item.user_id)}>
+                            <CircularProgress
+                              size={23}
+                              thickness={4}
+                              color="inherit"
+                            />
+                          </button>
+                        ) : (
+                          <Tooltip placement="bottom" title="Reset password">
+                            <button onClick={() => resetPass(item.user_id)}>
+                              <RestartAltIcon />
+                            </button>
+                          </Tooltip>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                    // {edit ? <StyledTableRow>hi</StyledTableRow> : null}
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div className="sm:hidden flex flex-col mb-4">
               {admins?.map((item) => (
-                <StyledTableRow key={item.email}>
-                  <StyledTableCell align="center">{item.name}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {item.vjudge_handle}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{item.email}</StyledTableCell>
-                  <StyledTableCell className="space-x-4" align="center">
-                    <CreateIcon
+                <div className="flex flex-col border-b py-4" key={item.email}>
+                  <div>{item.name}</div>
+                  <div>{item.vjudge_handle}</div>
+                  <div>{item.email}</div>
+                  <div>{item.level}</div>
+                  <div>{item.mentor_name}</div>
+                  <div>{item.enrolled ? <p> Yes </p> : <p> No </p>}</div>
+                  <div className="space-x-4">
+                    <button
                       onClick={() => {
                         initUpdate(item);
                       }}
-                    />
+                    >
+                      <CreateIcon />
+                    </button>
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -316,47 +366,98 @@ export default function User() {
                         </button>
                       </Tooltip>
                     )}
-                  </StyledTableCell>
-                </StyledTableRow>
+                  </div>
+                </div>
                 // {edit ? <StyledTableRow>hi</StyledTableRow> : null}
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+            </div>
+          </>
+        )}
 
-      <p className="text-3xl font-semibold lg:my-10 mb-4">Mentors</p>
-      {loading_mentors || loadingDelete ? (
-        <div className="flex justify-center py-32">
-          <CircularProgress size={50} thickness={4} color="inherit" />
-        </div>
-      ) : (
-        <TableContainer className="hidden md:flex" component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                {subHeaders.map((header) => (
-                  <StyledTableCell key={header} align="center">
-                    {header}
-                  </StyledTableCell>
-                ))}
-                <StyledTableCell align="center">ACTIONS</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <p className="text-3xl font-semibold sm:my-10 sm:mb-4">Mentors</p>
+        {loading_mentors || loadingDelete ? (
+          <div className="flex justify-center py-32">
+            <CircularProgress size={50} thickness={4} color="inherit" />
+          </div>
+        ) : (
+          <>
+            <TableContainer className="hidden md:flex" component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    {subHeaders.map((header) => (
+                      <StyledTableCell key={header} align="center">
+                        {header}
+                      </StyledTableCell>
+                    ))}
+                    <StyledTableCell align="center">ACTIONS</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {mentors?.map((item) => (
+                    <StyledTableRow key={item.email}>
+                      <StyledTableCell align="center">
+                        {item.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.vjudge_handle}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.email}
+                      </StyledTableCell>
+                      <StyledTableCell className="space-x-4" align="center">
+                        <button
+                          onClick={() => {
+                            initUpdate(item);
+                          }}
+                        >
+                          <CreateIcon />
+                        </button>
+                        <button onClick={() => deleteHandler(item.email)}>
+                          <DeleteIcon />
+                        </button>
+                        {loadingReset ? (
+                          <button onClick={() => resetPass(item.user_id)}>
+                            <CircularProgress
+                              size={23}
+                              thickness={4}
+                              color="inherit"
+                            />
+                          </button>
+                        ) : (
+                          <Tooltip placement="bottom" title="Reset password">
+                            <button onClick={() => resetPass(item.user_id)}>
+                              <RestartAltIcon />
+                            </button>
+                          </Tooltip>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                    // {edit ? <StyledTableRow>hi</StyledTableRow> : null}
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div className="sm:hidden flex flex-col mb-4">
               {mentors?.map((item) => (
-                <StyledTableRow key={item.email}>
-                  <StyledTableCell align="center">{item.name}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {item.vjudge_handle}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{item.email}</StyledTableCell>
-                  <StyledTableCell className="space-x-4" align="center">
-                    <CreateIcon
+                <div className="flex flex-col border-b py-4" key={item.email}>
+                  <div>
+                    <strong>Name: </strong>
+                    {item.name}
+                  </div>
+                  <div>{item.vjudge_handle}</div>
+                  <div>{item.email}</div>
+                  <div>{item.level}</div>
+                  <div>{item.mentor_name}</div>
+                  <div>{item.enrolled ? <p> Yes </p> : <p> No </p>}</div>
+                  <div className="space-x-4">
+                    <button
                       onClick={() => {
                         initUpdate(item);
                       }}
-                    />
+                    >
+                      <CreateIcon />
+                    </button>
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -375,55 +476,107 @@ export default function User() {
                         </button>
                       </Tooltip>
                     )}
-                  </StyledTableCell>
-                </StyledTableRow>
+                  </div>
+                </div>
                 // {edit ? <StyledTableRow>hi</StyledTableRow> : null}
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+            </div>
+          </>
+        )}
 
-      <p className="text-3xl font-semibold lg:my-10 mb-4">Trainees</p>
-      {loading_trainees || loadingDelete ? (
-        <div className="flex justify-center py-32">
-          <CircularProgress size={50} thickness={4} color="inherit" />
-        </div>
-      ) : (
-        <TableContainer className="hidden md:flex" component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                {headers.map((header) => (
-                  <StyledTableCell key={header} align="center">
-                    {header}
-                  </StyledTableCell>
-                ))}
-                <StyledTableCell align="center">ACTIONS</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <p className="text-3xl font-semibold sm:my-10 sm:mb-4">Trainees</p>
+        {loading_trainees || loadingDelete ? (
+          <div className="flex justify-center py-32">
+            <CircularProgress size={50} thickness={4} color="inherit" />
+          </div>
+        ) : (
+          <>
+            <TableContainer className="hidden md:flex" component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <StyledTableCell key={header} align="center">
+                        {header}
+                      </StyledTableCell>
+                    ))}
+                    <StyledTableCell align="center">ACTIONS</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {trainees?.map((item) => (
+                    <StyledTableRow key={item.email}>
+                      <StyledTableCell align="center">
+                        {item.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.vjudge_handle}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.email}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.level}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.mentor_name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {item.enrolled ? <p> Yes </p> : <p> No </p>}
+                      </StyledTableCell>
+                      <StyledTableCell className="space-x-4" align="center">
+                        <button
+                          onClick={() => {
+                            initUpdate(item);
+                          }}
+                        >
+                          <CreateIcon />
+                        </button>
+                        <button onClick={() => deleteHandler(item.email)}>
+                          <DeleteIcon />
+                        </button>
+                        {loadingReset ? (
+                          <button onClick={() => resetPass(item.user_id)}>
+                            <CircularProgress
+                              size={23}
+                              thickness={4}
+                              color="inherit"
+                            />
+                          </button>
+                        ) : (
+                          <Tooltip placement="bottom" title="Reset password">
+                            <button onClick={() => resetPass(item.user_id)}>
+                              <RestartAltIcon />
+                            </button>
+                          </Tooltip>
+                        )}
+                        <button>
+                          <AlertDialog email={item.email} />
+                        </button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                    // {edit ? <StyledTableRow>hi</StyledTableRow> : null}
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div className="sm:hidden flex flex-col ">
               {trainees?.map((item) => (
-                <StyledTableRow key={item.email}>
-                  <StyledTableCell align="center">{item.name}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {item.vjudge_handle}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{item.email}</StyledTableCell>
-                  <StyledTableCell align="center">{item.level}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {item.mentor_name}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {item.enrolled ? <p> Yes </p> : <p> No </p>}
-                  </StyledTableCell>
-                  <StyledTableCell className="space-x-4" align="center">
-                    <CreateIcon
+                <div className="flex flex-col border-b py-4" key={item.email}>
+                  <div>{item.name}</div>
+                  <div>{item.vjudge_handle}</div>
+                  <div>{item.email}</div>
+                  <div>{item.level}</div>
+                  <div>{item.mentor_name}</div>
+                  <div>{item.enrolled ? <p> Yes </p> : <p> No </p>}</div>
+                  <div className="space-x-4">
+                    <button
                       onClick={() => {
                         initUpdate(item);
                       }}
-                    />
-
+                    >
+                      <CreateIcon />
+                    </button>
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -445,14 +598,14 @@ export default function User() {
                     <button>
                       <AlertDialog email={item.email} />
                     </button>
-                  </StyledTableCell>
-                </StyledTableRow>
+                  </div>
+                </div>
                 // {edit ? <StyledTableRow>hi</StyledTableRow> : null}
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </div>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }
