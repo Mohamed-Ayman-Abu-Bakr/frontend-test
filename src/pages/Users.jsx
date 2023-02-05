@@ -1,14 +1,7 @@
 import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json'
+import URLS from "../urls/server_urls.json";
 import React, { useState, useEffect, useContext, useReducer } from "react";
-import {
-  DELETE_USERS,
-  UPDATE_USERS,
-  VIEW_ADMINS,
-  VIEW_ALL_TRANSCRIPTS,
-  VIEW_MENTORS,
-  VIEW_TRAINEES,
-} from "../permissions/permissions";
+import { VIEW_ADMINS, VIEW_MENTORS } from "../permissions/permissions";
 import { Store } from "../context/store";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -23,11 +16,7 @@ import CreateIcon from "@mui/icons-material/Create";
 import CircularProgress from "@mui/material/CircularProgress";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Tooltip from "@mui/material/Tooltip";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { toast } from "react-toastify";
-import Modal from "@mui/material/Modal";
-import ProgressList from "../components/ProgressList";
-import Box from "@mui/material/Box";
 import AlertDialog from "../components/AlertDialog";
 import Edit from "../components/Edit";
 
@@ -48,16 +37,16 @@ const reducer = (state, action) => {
       return { ...state, admins: action.payload, loading_admins: false };
     case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
-    
+
     case "SHOW_DIALOGUE":
       return { ...state, open: true };
     case "HIDE_DIALOGUE":
-      return { ...state, open: false }; 
-      
+      return { ...state, open: false };
+
     case "UPDATE_REQUEST":
       return { ...state, loadingUpdate: true };
     case "UPDATE_SUCCESS":
-      return { ...state, loadingUpdate: false, open:false };
+      return { ...state, loadingUpdate: false, open: false };
     case "UPDATE_FAIL":
       return { ...state, loadingUpdate: false };
 
@@ -83,7 +72,7 @@ const reducer = (state, action) => {
   }
 };
 
-function User() {
+export default function User() {
   const headers = [
     "Name",
     "VJudgeHandle",
@@ -93,31 +82,19 @@ function User() {
     "Enrolled",
   ];
 
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    p: 4,
-  };
-
   const subHeaders = ["Name", "VJudgeHandle", "Email"];
 
   const [userToEdit, setUserToEdit] = useState();
 
   const handleClose = () => {
-    dispatch({ type: "HIDE_DIALOGUE"});
+    dispatch({ type: "HIDE_DIALOGUE" });
   };
 
   const initUpdate = (item) => {
     setUserToEdit(item);
-    dispatch({ type: "SHOW_DIALOGUE"});
+    dispatch({ type: "SHOW_DIALOGUE" });
   };
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
   const [
     {
@@ -201,13 +178,9 @@ function User() {
   const resetPass = async (user_id) => {
     try {
       dispatch({ type: "RESET_REQUEST" });
-      await axios.patch(
-        URLS.USERS,
-        JSON.stringify({ user_id }),
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      await axios.patch(URLS.USERS, JSON.stringify({ user_id }), {
+        headers: { "Content-Type": "application/json" },
+      });
       dispatch({ type: "RESET_SUCCESS" });
       toast.success("Password is successfully reset");
     } catch (err) {
@@ -266,7 +239,7 @@ function User() {
     }
   };
 
-  const getData = async() =>{
+  const getData = async () => {
     if (userInfo?.permissions?.find((perm) => perm === VIEW_MENTORS)) {
       getMentors();
     }
@@ -281,15 +254,15 @@ function User() {
   }, []);
 
   return (
-    
-    <div className="flex flex-col px-4 min-h-screen items-center">
-      <Edit user={userToEdit}
-            mentors = {mentors} 
-            opened = {open} 
-            handleClose = {handleClose} 
-            submitEdit = {editHandler} 
-            updateUser = {setUserToEdit}
-            loadingUpdate = {loadingUpdate}
+    <div className="flex flex-col p-4 min-h-screen items-center">
+      <Edit
+        user={userToEdit}
+        mentors={mentors}
+        opened={open}
+        handleClose={handleClose}
+        submitEdit={editHandler}
+        updateUser={setUserToEdit}
+        loadingUpdate={loadingUpdate}
       />
       <p className="text-3xl font-semibold lg:my-10 mb-4">Admins</p>
       {loading_admins || loadingDelete ? (
@@ -318,7 +291,11 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <CreateIcon onClick={() => {initUpdate(item)}} />
+                    <CreateIcon
+                      onClick={() => {
+                        initUpdate(item);
+                      }}
+                    />
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -373,7 +350,11 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <CreateIcon onClick={() => {initUpdate(item)}} />
+                    <CreateIcon
+                      onClick={() => {
+                        initUpdate(item);
+                      }}
+                    />
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -435,8 +416,12 @@ function User() {
                     {item.enrolled ? <p> Yes </p> : <p> No </p>}
                   </StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <CreateIcon onClick={() => {initUpdate(item)}} />
-                    
+                    <CreateIcon
+                      onClick={() => {
+                        initUpdate(item);
+                      }}
+                    />
+
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
@@ -469,5 +454,3 @@ function User() {
     </div>
   );
 }
-
-export default User;

@@ -148,9 +148,9 @@ function NavBar() {
   };
 
   return (
-    <>
+    <nav className="sticky top-0 ">
       {userInfo ? (
-        <nav className="w-full fixed top-0 flex flex-row py-2 justify-between px-4 lg:justify-around items-center bg-white text-black drop-shadow ">
+        <div className="flex flex-row py-2 justify-between px-4 lg:justify-around items-center bg-white text-black drop-shadow ">
           <span className="flex lg:hidden mr-4">
             <img
               src="https://img.icons8.com/ios-filled/30/000000/menu-rounded.png"
@@ -278,9 +278,9 @@ function NavBar() {
               </NavLink>
             </li>
           </ul>
-        </nav>
+        </div>
       ) : null}
-    </>
+    </nav>
   );
 }
 
