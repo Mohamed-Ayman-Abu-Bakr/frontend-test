@@ -198,12 +198,12 @@ function User() {
     }
   };
 
-  const resetPass = async (email) => {
+  const resetPass = async (user_id) => {
     try {
       dispatch({ type: "RESET_REQUEST" });
       await axios.patch(
         URLS.USERS,
-        JSON.stringify({ email }),
+        JSON.stringify({ user_id }),
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -323,7 +323,7 @@ function User() {
                       <DeleteIcon />
                     </button>
                     {loadingReset ? (
-                      <button onClick={() => resetPass(item.email)}>
+                      <button onClick={() => resetPass(item.user_id)}>
                         <CircularProgress
                           size={23}
                           thickness={4}
@@ -332,7 +332,7 @@ function User() {
                       </button>
                     ) : (
                       <Tooltip placement="bottom" title="Reset password">
-                        <button onClick={() => resetPass(item.email)}>
+                        <button onClick={() => resetPass(item.user_id)}>
                           <RestartAltIcon />
                         </button>
                       </Tooltip>
@@ -378,7 +378,7 @@ function User() {
                       <DeleteIcon />
                     </button>
                     {loadingReset ? (
-                      <button onClick={() => resetPass(item.email)}>
+                      <button onClick={() => resetPass(item.user_id)}>
                         <CircularProgress
                           size={23}
                           thickness={4}
@@ -387,7 +387,7 @@ function User() {
                       </button>
                     ) : (
                       <Tooltip placement="bottom" title="Reset password">
-                        <button onClick={() => resetPass(item.email)}>
+                        <button onClick={() => resetPass(item.user_id)}>
                           <RestartAltIcon />
                         </button>
                       </Tooltip>
@@ -441,7 +441,7 @@ function User() {
                       <DeleteIcon />
                     </button>
                     {loadingReset ? (
-                      <button onClick={() => resetPass(item.email)}>
+                      <button onClick={() => resetPass(item.user_id)}>
                         <CircularProgress
                           size={23}
                           thickness={4}
@@ -450,7 +450,7 @@ function User() {
                       </button>
                     ) : (
                       <Tooltip placement="bottom" title="Reset password">
-                        <button onClick={() => resetPass(item.email)}>
+                        <button onClick={() => resetPass(item.user_id)}>
                           <RestartAltIcon />
                         </button>
                       </Tooltip>
