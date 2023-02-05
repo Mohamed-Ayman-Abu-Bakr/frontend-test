@@ -4,7 +4,7 @@ import AlertDialog from "../components/AlertDialog";
 
 function Home() {
   return (
-    <div className="flex bg-white justify-center min-h-[100vh] lg:min-h-[90vh]">
+    <div className="flex bg-white justify-center pt-32 md:py-0">
       <div className="flex lg:flex-row flex-col items-center justify-center lg:px-32">
         <div className="flex flex-col p-2">
           <div className="text-violet-500 text-4xl lg:text-7xl lg:text-left text-center font-bold pb-5 whitespace-nowrap">
