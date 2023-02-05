@@ -1,12 +1,12 @@
 import axios from "../hooks/axios";
-import URLS from '../urls/server_urls.json'
+import URLS from "../urls/server_urls.json";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState, useReducer } from "react";
 import { toast } from "react-toastify";
-import mobileLogin from "../assets/Login.jpg";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Store } from "../context/store";
 import { HOMEPAGE } from "../urls/frontend_urls";
+import LOGIN from "../assets/login.jpg";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -69,7 +69,7 @@ export default function SignIn() {
     <div className="flex h-screen items-center justify-center bg-white">
       <div className="flex flex-row items-center md:space-x-32 w-full justify-center">
         <div className="md:flex hidden flex-col items-center">
-          <img src={mobileLogin} className="w-[500px]" />
+          <img src={LOGIN} className="w-[500px]" />
         </div>
 
         <form onSubmit={submitHandler} className="w-[70%] md:w-[30%]">

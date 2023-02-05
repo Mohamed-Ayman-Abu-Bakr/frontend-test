@@ -82,6 +82,8 @@ export default function User() {
     "Enrolled",
   ];
 
+  const { state } = useContext(Store);
+
   const subHeaders = ["Name", "VJudgeHandle", "Email"];
 
   const [userToEdit, setUserToEdit] = useState();
