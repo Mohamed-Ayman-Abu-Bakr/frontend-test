@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import { toast } from "react-toastify";
 import { Store } from "../context/store";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,7 +24,7 @@ const reducer = (state, action) => {
   }
 };
 
-export default function EditProduct() {
+export default function EditProfile() {
   const { state } = useContext(Store);
   const { userInfo } = state;
   const [{ loading, loadingUpdate }, dispatch] = useReducer(reducer, {
@@ -31,22 +32,24 @@ export default function EditProduct() {
     error: "",
   });
 
+  const [userID, setUserID] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [vjudgeHandle, setVjudgeHandle] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(userInfo.password);
 
   const displayProfile = async () => {
     const params = new URLSearchParams([["email", userInfo.email]]);
     try {
       dispatch({ type: "FETCH_REQUEST" });
-      const response = await axios.get("http://localhost:5000/profile", {
+      const response = await axios.get(URLS.PROFILE, {
         params,
       });
+      setUserID(response.data.id)
       setName(response.data.name);
       setEmail(response.data.email);
       setVjudgeHandle(response.data.vjudge_handle);
-      setPassword(response.data.password);
+      // setPassword(response.data.password);
       dispatch({ type: "FETCH_SUCCESS" });
     } catch (error) {
       dispatch({ type: "FETCH_FAIL" });
@@ -59,8 +62,8 @@ export default function EditProduct() {
     try {
       dispatch({ type: "UPDATE_REQUEST" });
       await axios.post(
-        "http://localhost:5000/profile",
-        JSON.stringify({ email, name, password, vjudgeHandle }),
+        URLS.PROFILE,
+        JSON.stringify({ userID, email, name, password, vjudgeHandle }),
         {
           headers: { "Content-Type": "application/json" },
         }

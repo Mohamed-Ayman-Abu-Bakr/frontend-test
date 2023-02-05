@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../hooks/axios";
+import URLS from '../urls/server_urls.json'
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import {
   DELETE_USERS,
@@ -47,11 +48,16 @@ const reducer = (state, action) => {
       return { ...state, admins: action.payload, loading_admins: false };
     case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
-
+    
+    case "SHOW_DIALOGUE":
+      return { ...state, open: true };
+    case "HIDE_DIALOGUE":
+      return { ...state, open: false }; 
+      
     case "UPDATE_REQUEST":
       return { ...state, loadingUpdate: true };
     case "UPDATE_SUCCESS":
-      return { ...state, loadingUpdate: false };
+      return { ...state, loadingUpdate: false, open:false };
     case "UPDATE_FAIL":
       return { ...state, loadingUpdate: false };
 
@@ -100,15 +106,15 @@ function User() {
 
   const subHeaders = ["Name", "VJudgeHandle", "Email"];
 
-  const [edit, setEdit] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [userToEdit, setUserToEdit] = useState();
 
   const handleClose = () => {
-    setOpen(false);
+    dispatch({ type: "HIDE_DIALOGUE"});
+  };
+
+  const initUpdate = (item) => {
+    setUserToEdit(item);
+    dispatch({ type: "SHOW_DIALOGUE"});
   };
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -124,10 +130,12 @@ function User() {
       trainees,
       mentors,
       admins,
+      open,
     },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
+    open: false,
     error: "",
   });
 
@@ -150,7 +158,7 @@ function User() {
   const getTrainees = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST_trainees" });
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(URLS.USERS, {
         params: {
           role: "Trainee",
         },
@@ -165,7 +173,7 @@ function User() {
   const getMentors = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST_mentors" });
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(URLS.USERS, {
         params: {
           role: "Mentor",
         },
@@ -179,7 +187,7 @@ function User() {
   const getAdmins = async () => {
     try {
       dispatch({ type: "FETCH_REQUEST_admins" });
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(URLS.USERS, {
         params: {
           role: "Admin",
         },
@@ -190,12 +198,12 @@ function User() {
     }
   };
 
-  const resetPass = async (email) => {
+  const resetPass = async (user_id) => {
     try {
       dispatch({ type: "RESET_REQUEST" });
       await axios.patch(
-        "http://localhost:5000/users",
-        JSON.stringify({ email }),
+        URLS.USERS,
+        JSON.stringify({ user_id }),
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -212,13 +220,13 @@ function User() {
     if (window.confirm("Are you sure to delete?")) {
       try {
         dispatch({ type: "DELETE_REQUEST" });
-        await axios.delete("http://localhost:5000/users", {
+        await axios.delete(URLS.USERS, {
           params: {
             email: email,
           },
         });
         dispatch({ type: "DELETE_SUCCESS" });
-        getTrainees();
+        getData();
         toast.success("User successfully deleted");
       } catch (err) {
         toast.error(err);
@@ -229,7 +237,36 @@ function User() {
     }
   };
 
-  useEffect(() => {
+  const editHandler = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch({ type: "UPDATE_REQUEST" });
+      await axios.post(
+        URLS.PROFILE_ADMIN,
+        JSON.stringify({
+          userID: userToEdit.user_id,
+          name: userToEdit.name,
+          vjudgeHandle: userToEdit.vjudge_handle,
+          email: userToEdit.email,
+          level: userToEdit.level,
+          mentorID: userToEdit.mentor_id,
+          enrolled: userToEdit.enrolled,
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      dispatch({ type: "UPDATE_SUCCESS" });
+      getData();
+      toast.success("Profile updated");
+    } catch (error) {
+      dispatch({ type: "UPDATE_FAIL" });
+      toast.error(error);
+    }
+  };
+
+  const getData = async() =>{
     if (userInfo?.permissions?.find((perm) => perm === VIEW_MENTORS)) {
       getMentors();
     }
@@ -237,10 +274,23 @@ function User() {
       getAdmins();
     }
     getTrainees();
+  };
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return (
+    
     <div className="flex flex-col px-4 min-h-screen items-center">
+      <Edit user={userToEdit}
+            mentors = {mentors} 
+            opened = {open} 
+            handleClose = {handleClose} 
+            submitEdit = {editHandler} 
+            updateUser = {setUserToEdit}
+            loadingUpdate = {loadingUpdate}
+      />
       <p className="text-3xl font-semibold lg:my-10 mb-4">Admins</p>
       {loading_admins || loadingDelete ? (
         <div className="flex justify-center py-32">
@@ -268,14 +318,12 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button onClick={() => setEdit(!edit)}>
-                      <CreateIcon />
-                    </button>
+                    <CreateIcon onClick={() => {initUpdate(item)}} />
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
                     {loadingReset ? (
-                      <button onClick={() => resetPass(item.email)}>
+                      <button onClick={() => resetPass(item.user_id)}>
                         <CircularProgress
                           size={23}
                           thickness={4}
@@ -284,7 +332,7 @@ function User() {
                       </button>
                     ) : (
                       <Tooltip placement="bottom" title="Reset password">
-                        <button onClick={() => resetPass(item.email)}>
+                        <button onClick={() => resetPass(item.user_id)}>
                           <RestartAltIcon />
                         </button>
                       </Tooltip>
@@ -325,14 +373,12 @@ function User() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{item.email}</StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button onClick={() => setEdit(!edit)}>
-                      <CreateIcon />
-                    </button>
+                    <CreateIcon onClick={() => {initUpdate(item)}} />
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
                     {loadingReset ? (
-                      <button onClick={() => resetPass(item.email)}>
+                      <button onClick={() => resetPass(item.user_id)}>
                         <CircularProgress
                           size={23}
                           thickness={4}
@@ -341,7 +387,7 @@ function User() {
                       </button>
                     ) : (
                       <Tooltip placement="bottom" title="Reset password">
-                        <button onClick={() => resetPass(item.email)}>
+                        <button onClick={() => resetPass(item.user_id)}>
                           <RestartAltIcon />
                         </button>
                       </Tooltip>
@@ -389,14 +435,13 @@ function User() {
                     {item.enrolled ? <p> Yes </p> : <p> No </p>}
                   </StyledTableCell>
                   <StyledTableCell className="space-x-4" align="center">
-                    <button>
-                      <Edit data={item} />
-                    </button>
+                    <CreateIcon onClick={() => {initUpdate(item)}} />
+                    
                     <button onClick={() => deleteHandler(item.email)}>
                       <DeleteIcon />
                     </button>
                     {loadingReset ? (
-                      <button onClick={() => resetPass(item.email)}>
+                      <button onClick={() => resetPass(item.user_id)}>
                         <CircularProgress
                           size={23}
                           thickness={4}
@@ -405,7 +450,7 @@ function User() {
                       </button>
                     ) : (
                       <Tooltip placement="bottom" title="Reset password">
-                        <button onClick={() => resetPass(item.email)}>
+                        <button onClick={() => resetPass(item.user_id)}>
                           <RestartAltIcon />
                         </button>
                       </Tooltip>
